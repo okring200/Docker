@@ -1,0 +1,7 @@
+From debian
+
+MAINTAINER Martin Na <okring200@gmail.com>
+RUN apt-get update && apt-get install -y cowsay fortune
+COPY entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]
