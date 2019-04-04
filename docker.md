@@ -21,6 +21,33 @@ Docker 실행시
 
 메뉴바에 고래 모양이 나타나며, 실행 완료면 사라짐  <br/>
 
+정상설치 되었는지 확인을 위한 명령어<br /> `docker version`<br/ > 아래와 같이 Client&Server 정보 출력되면 설치 완료
+
+```
+Client: Docker Engine - Community
+ Version:           18.09.2
+ API version:       1.39
+ Go version:        go1.10.8
+ Git commit:        6247962
+ Built:             Sun Feb 10 04:12:39 2019
+ OS/Arch:           darwin/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          18.09.2
+  API version:      1.39 (minimum version 1.12)
+  Go version:       go1.10.6
+  Git commit:       6247962
+  Built:            Sun Feb 10 04:13:06 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+```
+
+> Client: Docker Engine - Community<br />Version:           18.09.2<br/>API version:       1.39<br/>Go version:        go1.10.8<br/>Git commit:        6247962<br/>Built:             Sun Feb 10 04:12:39 2019<br/> OS/Arch:           darwin/amd64<br/> Experimental:      false
+>
+> Server: Docker Engine - Community<br/> Engine:<br/>  Version:          18.09.2<br/>  API version:      1.39 (minimum version 1.12)<br/>  Go version:       go1.10.6<br/>  Git commit:       6247962<br/>  Built:            Sun Feb 10 04:13:06 2019<br/>  OS/Arch:          linux/amd64<br/>  Experimental:     false
+
 
 
 
