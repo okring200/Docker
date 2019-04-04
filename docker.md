@@ -17,7 +17,7 @@
 
 Docker 실행시 
 
-![docker-menubar](images/docker-menubar.png)
+![docker-menubar](./images/docker-menubar.png)
 
 메뉴바에 고래 모양이 나타나며, 실행 완료면 사라짐  <br/>
 
