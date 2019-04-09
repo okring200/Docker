@@ -227,3 +227,55 @@ always: 프로세스의 Exit Code와 상관없이 재시작합니다. 예) --res
 `restart` 명령어를 이용하여 재시작할 수 있습니다.
 
 ###4-7. Attach
+
+## 5. Cowsay 예제
+
+### 5-1. Cowsay 설치 및 실행
+
+`docker run -it --name cowsay --hostname cowsay debian bash` <br /> Cowsay 컨테이너를 실행합니다.
+
+`apt-get update` & `apt-get install -y cowsay fortune` <br/> 위의 두 명령어를 이용하여 패키지들을 설치합니다.
+
+`/usr/games/fortune | /usr/games/cowsay` 응용프로그램을 시작합니다.<br/> 컨테이너를 이미지로 바꾸려면 `docker commit` 명령어를 이용하면 됩니다. 이 명령어는 컨테이너 상태에 상관 없이 동작합니다.<br/> `docker commit <컨테이너이름> <이미지 저장소/이미지 이름>` 을 명시해 주어야 합니다.
+
+```
+dnaminje-ui-MacBookPro:Docker 10058$ docker commit cowsay test/cowsayimage
+sha256:fa5fdcba6cf9f23141eb55a4f8b1285a2a63f29a60c6251cb640fb9f5ffbe844
+```
+
+위와 같이 이미지를 구분할 수 있는 ID가 반환됩니다. 이제 이 이미지를 실행할 수 있습니다.<br/> `docker run test/cowsayimage /usr/games/cowsay "MOO"`
+
+하지만 위와 같이 기본이미지를 사용하려면 처음부터 모든 작업을 다시 시작해야합니다. 이런 문제를 해결 하려면  도커파일을 이용하여 이미지 생성을 자동화하는 것입니다.
+
+### 5-2. Cowsay 도커파일로 이미지 만들기
+
+```
+mkdir cowsay
+cd cowsay
+touch Dockerfile
+```
+
+위 명령어를 이용하여 dockerfile을 생성합니다.<br/> 다음 내용을 dockerfile에 추가합니다.
+
+```
+From debian
+RUN apt-get update && apt-get install -y fortune
+```
+
+`docker build -t test/cowsay-dockerfile .` 을 이용하여 이미지를 생성합니다.
+
+`docker run test/cowsay-dockerfile /usr/games/cowsay "MOO"` <br/> 위의 명령어를 이용하여 이미지를 실행시킬 수 있습니다.
+
+### 5-3. EntryPoint
+
+Entrypoint 설정은 docker run명령으로 전달되는 인자처리를 하기위한 실행 파일을 명시할 수 있도록 해줍니다.
+
+다음의 줄을 docker file 하단에 추가합니다.<br/> `ENTRYPOINT ["/usr/games/cowsay"]` 
+
+이미지를 다시 빌드하고 실행하면 cowsay 명령없이 이미지를 실행할 수 있습니다.
+
+```
+docker build -t test/cowsay-dockerfile
+docker run test/cowsay-dockerfile "Moo"
+```
+
