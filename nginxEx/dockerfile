@@ -1,0 +1,20 @@
+FROM ubuntu:16.04
+MAINTAINER okring200 <okring200@gmail.com>
+
+RUN apt-get update
+RUN apt-get install -y nginx
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+RUN chown -R www-data:www-data /var/lib/nginx
+
+## host와 공유할 directory 목록
+VOLUME ["/data", "/etc/nginx/site-enabled", "/var/log/nginx"]
+
+#CMD에서 설정한 실행파일이 실행될 directory
+WORKDIR /etc/nginx
+
+#컨테이너 시작시 실행될 파
+CMD ["nginx"]
+
+#호스트와 연결될 포트 번
+EXPOSE  80
+EXPOSE 443
