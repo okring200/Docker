@@ -279,3 +279,73 @@ docker build -t test/cowsay-dockerfile
 docker run test/cowsay-dockerfile "Moo"
 ```
 
+## 6. NGINX - MongoDB 예제
+
+### 6.1 nginx 이미지파일 생성 및 실행
+
+```
+mkdir nginxEx
+cd nginxEx
+```
+
+폴더로 이동 후 dockerfile을 생성하여줍니다
+
+```
+FROM ubuntu:16.04
+MAINTAINER okring200 <okring200@gmail.com>
+
+RUN apt-get update
+RUN apt-get install -y nginx
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+RUN chown -R www-data:www-data /var/lib/nginx
+
+## host와 공유할 directory 목록
+VOLUME ["/data", "/etc/nginx/site-enabled", "/var/log/nginx"]
+
+#CMD에서 설정한 실행파일이 실행될 directory
+WORKDIR /etc/nginx
+
+#컨테이너 시작시 실행될 파일
+CMD ["nginx"]
+
+#호스트와 연결될 포트 번호
+EXPOSE  80
+EXPOSE 443
+```
+
+Dockerfile을 작성하였으면 해당 이미지를 생성합니다. 파일이 저장되 있는 경로에서 아래의 명령어를 실행합니다.<br/> `docker build --tag hello:0.1 .` <br/> docker build <option> <Dockerfile 경로> 형식입니다. tag 옵션으로 이미지 이름과 태그를 설정할 수 있습니다. 
+
+docker를 실행해 봅니다.
+
+`docker run --name hello-nginx -d -p 80:80 -v /Users/10058/minje/docker/nginxEx/docker/data/:/data hello:0.1` <br/> `-v` 옵션을 이용하여 호스트의 directory를 컨테이너의  **/data** directory에 연결합니다. host directory에 파일을 넣으면 컨테이너에서 해당 파일을 읽을 수 있습니다.
+
+```
+naminje-ui-MacBookPro:nginxEx 10058$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                         NAMES
+0ae1b2918c39        hello:0.1           "nginx"             12 minutes ago      Up 12 minutes       0.0.0.0:80->80/tcp, 443/tcp   hello-nginx
+```
+
+hello-nginx 컨테이너가 실행되었습니다. 
+
+웹 브라우저를 실행하여, `http://localhost:80` 접속하면 아래와 같은 화면이 표시됩니다.
+
+![hello-ngix](./images/hello-ngix.png)
+
+### 6-2. 컨테이너 연결
+
+mongoDB를 컨테이너로 올려 웹서버와 연결시켜봅니다.<br/>먼저 db 이미지를 컨테이너로 실행합니다.
+
+`docker run --name db -d mongo` 
+
+웹 컨테이너를 생성하면서 db 컨테이너와 연결합니다.웹서버 컨테이너는 nignx를 사용하겠습니다.
+
+`docker run --name web -d -p 80:80 --link db:db nginx` <br/>
+
+`docker inspect` 명령어를 통하여 hostpath를 확인 후 내용을 살펴봅니다.
+
+`"HostsPath":"/var/lib/docker/containers/3656b6aaf32875d9b8c02afde101268b7dfa6f7014d720ec659cdd25b84a525b/hosts"` <br/>**mac 에서는 path가 다르다.** mac은 docker의 실제 호스트가 아니다. Mac 용 docker는 가상의 머신을 실행하기 때문에 /var/lib/docker/container에 존재하지 않는다.
+
+`screen ~/Library/containers/com.docker.docker/Data/vms/0/tty` <br/>위의 명령어를 입력하게 되면 빈 화면이 나오는데 거기에 <br/>`cat /var/lib/docker/containers/<hostpath>/hosts` <br/>을 실행하여 세부 정보를 볼 수 있습니다.
+
+`172.17.0.2      db e0cc729108c2` <br/>db는 `—link db:db` 에서 설정한 별칭이고 뒤에 e0cc729108c2는 container id를 나타냅니다. 앞의 주소는 db 컨테이너의 주소이며 별칭을 통해 연결한 컨테이너에 접속할 수 있습니다.
+
